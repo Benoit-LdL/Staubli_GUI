@@ -27,6 +27,12 @@ const viewport = document.getElementById('viewport');
 viewport.appendChild(renderer.domElement);
 
 // --- Lighting & Helpers ---
+const pmremGenerator = new THREE.PMREMGenerator(renderer);
+pmremGenerator.compileEquirectangularShader();
+
+// This creates a fake "room" for the metal to reflect
+scene.environment = pmremGenerator.fromScene(new THREE.Scene()).texture;
+
 scene.add(new THREE.AmbientLight(0xffffff, 0.6));
 const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
 dirLight.position.set(2, 4, 3);
