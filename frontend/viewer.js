@@ -29,6 +29,20 @@ scene.add(fillLight);
 
 scene.add(new THREE.GridHelper(2, 20, 0x333355, 0x222244));
 
+
+// World Axis Helper (Size 0.5 units)
+// Red = X, Green = Y, Blue = Z
+const axesHelper = new THREE.AxesHelper(0.5);
+scene.add(axesHelper);
+
+// Optional: Add local axes to every joint to see rotation directions
+// Put this inside your buildArm loop after group is created:
+// const localAxes = new THREE.AxesHelper(0.1);
+// group.add(localAxes);
+
+
+
+
 // --- Robot Definition ---
 const JOINT_DEFS = [
   { name: "base_link", translation: [0,     0,     0    ], isBase: true  },
@@ -118,7 +132,8 @@ buildArm();
 
 // --- Controls & Interactivity ---
 let isDragging = false, prevX = 0, prevY = 0;
-let theta = 0.8, phi = 0.6, radius = 2.2;
+let theta = 0.5, phi = 1.2, radius = 2.5;
+
 
 renderer.domElement.addEventListener('mousedown', e => {
   isDragging = true; prevX = e.clientX; prevY = e.clientY;
