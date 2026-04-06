@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 // --- LERPING ---
+// These must be updated by the external controls
 let targetAngles = [0, 0, 0, 0, 0, 0];
 let currentDisplayAngles = [0, 0, 0, 0, 0, 0];
 const LERP_FACTOR = 0.1; // 0.1 = smooth, 1.0 = instant/snappy
@@ -14,6 +15,7 @@ scene.background = new THREE.Color(0x1a1a2e);
 const camera = new THREE.PerspectiveCamera(
   50, window.innerWidth / window.innerHeight, 0.01, 100
 );
+// Default camera position
 camera.position.set(1.2, 1.2, 1.6);
 camera.lookAt(0, 0.6, 0);
 
@@ -36,19 +38,9 @@ scene.add(fillLight);
 
 scene.add(new THREE.GridHelper(2, 20, 0x333355, 0x222244));
 
-
-// World Axis Helper (Size 0.5 units)
-// Red = X, Green = Y, Blue = Z
+// World Axis Helper: Red=X, Green=Y, Blue=Z
 const axesHelper = new THREE.AxesHelper(0.5);
 scene.add(axesHelper);
-
-// Optional: Add local axes to every joint to see rotation directions
-// Put this inside your buildArm loop after group is created:
-// const localAxes = new THREE.AxesHelper(0.1);
-// group.add(localAxes);
-
-
-
 
 // --- Robot Definition ---
 const JOINT_DEFS = [
@@ -115,6 +107,7 @@ async function buildArm() {
       group.add(buildPlaceholder(colors[i]));
     }
 
+    // Pivot indicator
     const pivot = new THREE.Mesh(
       new THREE.SphereGeometry(0.015, 12, 12),
       new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0x666666 })
@@ -124,26 +117,22 @@ async function buildArm() {
     if (!def.isBase) {
       jointGroups.push(group);
     }
-    parent = group;
 
     if (def.isBase) {
-      // Rotate the base so that "Up" in the model (Z) 
-      // matches "Up" in Three.js (Y)
+      // Rotate base to match Three.js Y-up and apply your 90deg clockwise offset
       group.rotation.x = -Math.PI / 2;
-      // 2. Then, rotate it 90° clockwise around the new vertical axis.
-      // In Three.js, after the X rotation, the "Vertical" axis for the group is 'z'
       group.rotation.z = -Math.PI / 2;
     }
+
+    parent = group;
   }
 }
 
-// Initial Build Call
 buildArm();
 
-// --- Controls & Interactivity ---
+// --- Controls & Camera ---
 let isDragging = false, prevX = 0, prevY = 0;
 let theta = 0.5, phi = 1.2, radius = 2.5;
-
 
 renderer.domElement.addEventListener('mousedown', e => {
   isDragging = true; prevX = e.clientX; prevY = e.clientY;
@@ -171,11 +160,13 @@ function updateCamera() {
 }
 updateCamera();
 
+/**
+ * FIX: This now only updates the goal. 
+ * The animate() loop handles the actual smooth transition.
+ */
 export function applyJointAngles(angles) {
   for (let i = 0; i < 6; i++) {
-    if (jointGroups[i]) {
-      jointGroups[i].setRotationFromAxisAngle(AXES[i], angles[i]);
-    }
+    targetAngles[i] = angles[i];
   }
 }
 
@@ -193,10 +184,11 @@ function animate() {
 
   // Smoothly interpolate current angles toward target angles
   for (let i = 0; i < 6; i++) {
-    const diff = targetAngles[i] - currentDisplayAngles[i];
-    currentDisplayAngles[i] += diff * LERP_FACTOR;
-
     if (jointGroups[i]) {
+      const diff = targetAngles[i] - currentDisplayAngles[i];
+      currentDisplayAngles[i] += diff * LERP_FACTOR;
+      
+      // Update the 3D rotation based on interpolated value
       jointGroups[i].setRotationFromAxisAngle(AXES[i], currentDisplayAngles[i]);
     }
   }
