@@ -104,6 +104,12 @@ async function buildArm() {
       jointGroups.push(group);
     }
     parent = group;
+
+    // TX90 URDF uses Z-up, rotate the whole arm so it stands upright in Three.js
+    // The first group in the chain is the base — rotate it -90° around X
+    if (jointGroups.length > 0 && jointGroups[0].parent) {
+      jointGroups[0].parent.rotation.x = -Math.PI / 2;
+    }
   }
 }
 
