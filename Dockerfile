@@ -17,4 +17,4 @@ RUN echo "=== /app contents ===" && ls -la /app && \
 
 WORKDIR /app/backend
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "1111"]
