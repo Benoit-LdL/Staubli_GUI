@@ -159,8 +159,19 @@
   <button class="btn secondary" id="home-btn">Home position</button>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- Three.js -->
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+    }
+  }
+</script>
+
 <script type="module" src="/static/viewer.js"></script>
 <script type="module" src="/static/controls.js"></script>
+
 </body>
 </html>
