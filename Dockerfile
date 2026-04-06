@@ -16,4 +16,4 @@ COPY models/   ./models/
 WORKDIR /app/backend
 
 # Uvicorn listens on all interfaces inside the container
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
