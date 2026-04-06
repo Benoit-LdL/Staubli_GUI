@@ -6,7 +6,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 // These must be updated by the external controls
 let targetAngles = [0, 0, 0, 0, 0, 0];
 let currentDisplayAngles = [0, 0, 0, 0, 0, 0];
-const LERP_FACTOR = 0.1; // 0.1 = smooth, 1.0 = instant/snappy
+const LERP_FACTOR = 0.05; // 0.1 = smooth, 1.0 = instant/snappy
 
 // --- Scene Setup ---
 const scene = new THREE.Scene();
@@ -80,7 +80,23 @@ async function loadGLB(name) {
   return new Promise((resolve) => {
     loader.load(
       `/models/glb/${name}.glb`,
-      (gltf) => resolve(gltf.scene),
+      (gltf) => {
+        const model = gltf.scene;
+        
+        // Traverse the model to update all internal meshes
+        model.traverse((child) => {
+          if (child.isMesh) {
+            child.material = new THREE.MeshStandardMaterial({
+              color: 0x888888,      // Light grey/silver base
+              metalness: 0.9,       // High metalness for aluminum
+              roughness: 0.2,       // Low roughness for a polished look
+              envMapIntensity: 1.0  // Helps with reflections
+            });
+          }
+        });
+        
+        resolve(model);
+      },
       undefined,
       (err) => {
         console.warn(`Could not load ${name}.glb — using placeholder`, err);
