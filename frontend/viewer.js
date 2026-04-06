@@ -123,6 +123,9 @@ async function buildArm() {
       // Rotate the base so that "Up" in the model (Z) 
       // matches "Up" in Three.js (Y)
       group.rotation.x = -Math.PI / 2;
+      // 2. Then, rotate it 90° clockwise around the new vertical axis.
+      // In Three.js, after the X rotation, the "Vertical" axis for the group is 'z'
+      group.rotation.z = -Math.PI / 2;
     }
   }
 }
