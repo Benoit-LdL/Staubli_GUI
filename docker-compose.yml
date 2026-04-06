@@ -5,11 +5,5 @@ services:
     build: .
     container_name: robot-arm
     ports:
-      - "8000:8000"       # access the app at http://truenas-ip:8000
-    volumes:
-      # Mount backend and frontend for live reload during development.
-      # Remove these volume mounts for a clean production deploy.
-      - ./backend:/app/backend
-      - ./frontend:/app/frontend
-      - ./models:/app/models
+      - "8000:8000"
     restart: unless-stopped
