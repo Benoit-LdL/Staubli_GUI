@@ -18,7 +18,7 @@ FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
 app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 
 # add this line after the existing /static mount, around line 12
-app.mount("/models", StaticFiles(directory=Path(__file__).parent.parent / "models"), name="models")
+app.mount("/models/", StaticFiles(directory=Path(__file__).parent.parent / "models/glb"), name="models")
 
 # ── REST endpoints ──────────────────────────────────────────────────
 

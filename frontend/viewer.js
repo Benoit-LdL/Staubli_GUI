@@ -66,7 +66,7 @@ function buildPlaceholder(color) {
 async function loadGLB(name) {
   return new Promise((resolve) => {
     loader.load(
-      `/models/glb/${name}.glb`,
+      `/models/${name}.glb`,
       (gltf) => resolve(gltf.scene),
       undefined,
       (err) => {
