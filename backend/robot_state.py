@@ -5,29 +5,25 @@ import numpy as np
 
 NUM_JOINTS = 6
 
-# Per-joint soft limits in radians — adjust to your arm's physical limits
+# Exact limits from Staubli TX90 URDF (radians)
 JOINT_LIMITS = [
-    (-np.pi,     np.pi),      # joint 1 — base rotation
-    (-np.pi/2,   np.pi/2),    # joint 2
-    (-np.pi/2,   np.pi/2),    # joint 3
-    (-np.pi,     np.pi),      # joint 4
-    (-np.pi/2,   np.pi/2),    # joint 5
-    (-np.pi,     np.pi),      # joint 6 — end effector rotation
+    (-np.pi,              np.pi),            # joint 1 — base    ±180°
+    (np.radians(-130),    np.radians(147.5)), # joint 2 — shoulder
+    (np.radians(-145),    np.radians(145)),   # joint 3 — elbow
+    (np.radians(-270),    np.radians(270)),   # joint 4 — forearm roll
+    (np.radians(-115),    np.radians(140)),   # joint 5 — wrist pitch
+    (np.radians(-270),    np.radians(270)),   # joint 6 — wrist roll
 ]
 
 @dataclass
 class RobotState:
-    # Current joint angles in radians
     joint_angles: List[float] = field(
         default_factory=lambda: [0.0] * NUM_JOINTS
     )
-    # Connected WebSocket clients — we broadcast to all of them
     clients: Set = field(default_factory=set)
-    # Lock so concurrent WS messages don't corrupt the state
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
 
     def clamp_angles(self, angles: List[float]) -> List[float]:
-        """Clamp each joint angle to its soft limit."""
         clamped = []
         for i, a in enumerate(angles):
             lo, hi = JOINT_LIMITS[i]
@@ -40,5 +36,4 @@ class RobotState:
             "joints": self.joint_angles,
         }
 
-# Module-level singleton — import this everywhere
 robot = RobotState()
