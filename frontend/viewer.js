@@ -2,6 +2,11 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
+// --- LERPING ---
+let targetAngles = [0, 0, 0, 0, 0, 0];
+let currentDisplayAngles = [0, 0, 0, 0, 0, 0];
+const LERP_FACTOR = 0.1; // 0.1 = smooth, 1.0 = instant/snappy
+
 // --- Scene Setup ---
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x1a1a2e);
@@ -12,7 +17,9 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.set(1.2, 1.2, 1.6);
 camera.lookAt(0, 0.6, 0);
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const canvas = document.createElement('canvas');
+const context = canvas.getContext('webgl2');
+const renderer = new THREE.WebGLRenderer({ canvas: canvas, context: context, antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 const viewport = document.getElementById('viewport');
 viewport.appendChild(renderer.domElement);
@@ -183,6 +190,17 @@ onResize();
 
 function animate() {
   requestAnimationFrame(animate);
+
+  // Smoothly interpolate current angles toward target angles
+  for (let i = 0; i < 6; i++) {
+    const diff = targetAngles[i] - currentDisplayAngles[i];
+    currentDisplayAngles[i] += diff * LERP_FACTOR;
+
+    if (jointGroups[i]) {
+      jointGroups[i].setRotationFromAxisAngle(AXES[i], currentDisplayAngles[i]);
+    }
+  }
+
   renderer.render(scene, camera);
 }
 animate();
